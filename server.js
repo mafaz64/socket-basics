@@ -15,7 +15,10 @@ io.on('connection', function (socket) {
 		//Now send the received message to all clients attached 
 		//to the server excpet the sender. Can use io.emit 
 		//if we need to send it to all including the sender.
-		socket.broadcast.emit('message', message);
+		//socket.broadcast.emit('message', message);
+
+		//io.emit lets us send the message to every one including the sender.
+		io.emit('message', message);
 	})
 
 	//Now we will use socket to emit a custom event.

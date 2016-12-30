@@ -9,6 +9,10 @@ socket.on('connect', function() {
 socket.on('message', function(message) {
 	console.log('New message');
 	console.log (message.text);
+
+	//Following will show the message on the browser in index.html under div messages.
+	//NOTE: If we have to access a class in jQuery we use . in from of class name
+	jQuery('.messages').append('<p>' + message.text + '</p>')
 });
 
 //Following handles the submiting of new message.
