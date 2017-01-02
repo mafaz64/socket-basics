@@ -8,11 +8,17 @@ socket.on('connect', function() {
 //and prints the content of the message object received.
 socket.on('message', function(message) {
 	console.log('New message');
+	console.log (message.timestamp);
 	console.log (message.text);
 
+	// var timestamp = message.timestamp;
+	// var timestampMoment = moment.utc(parseInt(timestamp));
+
+	var timestampMoment = moment.utc(message.timestamp);
+
 	//Following will show the message on the browser in index.html under div messages.
-	//NOTE: If we have to access a class in jQuery we use . in from of class name
-	jQuery('.messages').append('<p>' + message.text + '</p>')
+	//NOTE: If we have to access a class in jQuery we use . followed by class name
+	jQuery('.messages').append('<p>' + '<strong>' + timestampMoment.local().format('h:mm a') + ':</strong>'  + message.text + '</p>')
 });
 
 //Following handles the submiting of new message.
@@ -31,7 +37,11 @@ $form.on('submit', function(event) {
 	//Find 'input' element with name attribute of message and stores it in $message variable
 	var $message = $form.find('input[name=message]');
 
+	// var now = moment();
+	// var messageTimestamp = now.format('x');
+
 	socket.emit('message', {
+		//timestamp: messageTimestamp,
 		//text: $form.find('input[name=message]').val()  //Find 'input' element with name attribute of message
 		text: $message.val()
 	});

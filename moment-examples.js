@@ -7,7 +7,8 @@ console.log(now.format('X')); //Dispalys the seconds passed since Jan 1, 1970
 console.log(now.format('x')); //Dispalys the milli seconds passed since Jan 1, 1970
 
 
-var timestamp = 1483196724177;
+var timestamp = 1483196724177; //Use milli seconds elapsed since Jan 1, 1970
+
 var timestampMoment = moment.utc(timestamp);
 console.log(timestampMoment.format());
 
