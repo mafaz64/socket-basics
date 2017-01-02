@@ -1,4 +1,9 @@
 var socket = io();
+//If query varibale name is not found 'Anonymous' will be assigned to name variable
+var name = getQueryVariable('name') || 'Anonymous';
+var room = getQueryVariable('room');
+
+console.log(name + ' want\'s to join ' + room);
 
 socket.on('connect', function() {
 	console.log('Connected to socket.io server!');
@@ -18,7 +23,10 @@ socket.on('message', function(message) {
 
 	//Following will show the message on the browser in index.html under div messages.
 	//NOTE: If we have to access a class in jQuery we use . followed by class name
-	jQuery('.messages').append('<p>' + '<strong>' + timestampMoment.local().format('h:mm a') + ':</strong>'  + message.text + '</p>')
+	var $message = jQuery('.messages');  //Note: $message representa a jQuery selector
+	$message.append('<p><strong>' + message.name + ' ' + timestampMoment.local().format('h:mm a') + '</strong></p>');
+	$message.append('<p>'+ message.text + '</p>') ;
+	//jQuery('.messages').append('<p>' + '<strong>' + timestampMoment.local().format('h:mm a') + ':</strong>'  + message.text + '</p>')
 });
 
 //Following handles the submiting of new message.
@@ -32,6 +40,7 @@ var $form = jQuery('#message-form');
 
 $form.on('submit', function(event) {
 	//NOTE: Calling preventDefault() on the submit event prevents the submit if the form is refreshed.
+	
 	event.preventDefault();
 
 	//Find 'input' element with name attribute of message and stores it in $message variable
@@ -43,6 +52,7 @@ $form.on('submit', function(event) {
 	socket.emit('message', {
 		//timestamp: messageTimestamp,
 		//text: $form.find('input[name=message]').val()  //Find 'input' element with name attribute of message
+		name: name,
 		text: $message.val()
 	});
 
