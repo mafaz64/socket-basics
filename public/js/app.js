@@ -5,8 +5,19 @@ var room = getQueryVariable('room');
 
 console.log(name + ' want\'s to join ' + room);
 
+//Update h1 tag
+var $roomTitle = jQuery('.room-title');  //Note: $roomTitle represents a jQuery selector
+$roomTitle.text(room);
+
 socket.on('connect', function() {
 	console.log('Connected to socket.io server!');
+
+	//When a user joins a room we emit a custom event 'joinRoom' to the server passing an object
+	//containing the user name and the room they want to join.
+	socket.emit('joinRoom', {
+		name: name,
+		room: room
+	});
 });
 
 //Following code listens for custome event 'message' 
@@ -23,10 +34,12 @@ socket.on('message', function(message) {
 
 	//Following will show the message on the browser in index.html under div messages.
 	//NOTE: If we have to access a class in jQuery we use . followed by class name
-	var $message = jQuery('.messages');  //Note: $message representa a jQuery selector
+	var $message = jQuery('.messages');  //Note: $message represents a jQuery selector
 	$message.append('<p><strong>' + message.name + ' ' + timestampMoment.local().format('h:mm a') + '</strong></p>');
 	$message.append('<p>'+ message.text + '</p>') ;
 	//jQuery('.messages').append('<p>' + '<strong>' + timestampMoment.local().format('h:mm a') + ':</strong>'  + message.text + '</p>')
+
+	
 });
 
 //Following handles the submiting of new message.
@@ -52,7 +65,8 @@ $form.on('submit', function(event) {
 	socket.emit('message', {
 		//timestamp: messageTimestamp,
 		//text: $form.find('input[name=message]').val()  //Find 'input' element with name attribute of message
-		name: name,
+		name: name,  //Added the name to the message object and set it to the name variable
+		//room: room,  //Added the room to the message object and set it to the room variable
 		text: $message.val()
 	});
 

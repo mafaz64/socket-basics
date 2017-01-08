@@ -7,9 +7,28 @@ var moment = require('moment');
 
 app.use(express.static(__dirname + '/public'));
 
+var clientInfo = {};
+
 io.on('connection', function (socket) {
 	var timestamp = moment().format('x');
 	console.log(timestamp + ': User connected via socket.io!')
+
+	socket.on ('joinRoom', function(req) {
+		//socket.id is a unique id for each socket.
+		//This is how we can store the data for each request against each unique socket id
+		clientInfo[socket.id] = req;
+
+		//The method socket.join tells to add this socket to a specific room.
+		socket.join(req.room);
+
+		//The following broadcasts a message to a specific room
+		socket.broadcast.to(req.room).emit('message', {
+			name: 'System',
+			timestamp: moment().valueOf(),
+			text: req.name + ' has joined!'
+		});
+
+	});
 
 	socket.on('message', function(message) {
 		console.log('Message received:' + message.text);
@@ -26,7 +45,11 @@ io.on('connection', function (socket) {
 
 
 		//io.emit lets us send the message to every one including the sender.
-		io.emit('message', message);
+		//io.emit('message', message);
+
+		//To emit message to all users of a specific room we use the following.
+		//We used cilientInfo of the current socket to access the room we want to send the message to.
+		io.to(clientInfo[socket.id].room).emit('message', message);
 	})
 
 	//Now we will use socket to emit a custom event.
