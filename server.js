@@ -13,6 +13,26 @@ io.on('connection', function (socket) {
 	var timestamp = moment().format('x');
 	console.log(timestamp + ': User connected via socket.io!')
 
+	//Built in sockect event 'disconnect' is sent to the server when a clinet disconnects
+	socket.on('disconnect', function() {
+		if( typeof clientInfo[socket.id] !== 'undefined') {
+			//The socket.leave disconnects the user from the room
+			socket.leave(clientInfo[socket.id].room);
+
+			//The following broadcasts a message to a specific room
+			io.to(clientInfo[socket.id].room).emit('message', {
+				name: 'System',
+				timestamp: moment().valueOf(),
+				text: clientInfo[socket.id].name + ' has left!'
+			});
+
+			//Clean the data from clientInfo
+			delete clientInfo[socket.id];
+		}
+
+	});
+	
+
 	socket.on ('joinRoom', function(req) {
 		//socket.id is a unique id for each socket.
 		//This is how we can store the data for each request against each unique socket id
